@@ -64,8 +64,43 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
         $data['ns'] = resolve_id(getNS($ID),$ns);
         $data['skin'] = 'original';
 
-        $data['skin'] = $params;
+        // alignment
+        $data['align'] = 'left';
+        if(preg_match('/\bleft\b/i',$params)){
+            $data['align'] = 'left';
+            $params = preg_replace('/\bleft\b/i','',$params);
+        }
+        if(preg_match('/\bcenter\b/i',$params)){
+            $data['align'] = 'center';
+            $params = preg_replace('/\bcenter\b/i','',$params);
+        }
+        if(preg_match('/\bright\b/i',$params)){
+            $data['align'] = 'right';
+            $params = preg_replace('/\bright\b/i','',$params);
+        }
 
+        $data['shuffle'] = false;
+        if(preg_match('/\bshuffle\b/i',$params)){
+            $data['shuffle'] = true;
+            $params = preg_replace('/\bshuffle\b/i','',$params);
+        }
+
+        $data['repeat'] = false;
+        if(preg_match('/\brepeat\b/i',$params)){
+            $data['repeat'] = true;
+            $params = preg_replace('/\brepeat\b/i','',$params);
+        }
+
+        $data['autoplay'] = false;
+        if(preg_match('/\bautoplay\b/i',$params)){
+            $data['autoplay'] = true;
+            $params = preg_replace('/\bautoplay\b/i','',$params);
+        }
+
+
+
+        // the rest is the skin
+        $data['skin'] = trim($params);
 
         list($data['skin'],$data['width'],$data['height']) = $this->_skininfo($data['skin']);
 
@@ -79,6 +114,9 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
         if($mode != 'xhtml') return false;
 
         $att = array();
+        $att['class'] = 'media'.$data['align'];
+        if($data['align'] == 'right') $att['align'] = 'right';
+        if($data['align'] == 'left')  $att['align'] = 'left';
 
         $params = array(
             'skin_url'     => DOKU_REL.'lib/plugins/jukebox/skins/'.$data['skin'].'/',
@@ -89,6 +127,9 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
             'findImage'    => 'true',
             'useId3'       => 'true'
         );
+        if($data['shuffle']) $params['shuffle'] = 'true';
+        if($data['autoplay']) $params['autoplay'] = 'true';
+        if($data['repeat']) $params['repeat'] = 'true';
 
         $swf = DOKU_REL.'lib/plugins/jukebox/xspf_jukebox.swf';
 
@@ -100,8 +141,11 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
         $skin = strtolower($skin);
         $skin = preg_replace('/[^a-z]+/','',$skin);
         if(!$skin) $skin = 'original';
-
-        $data = @file_get_contents(dirname(__FILE__).'/skins/'.$skin.'/skin.xml');
+        if(@file_exists(dirname(__FILE__).'/skins/'.$skin.'/skin.xml')){
+            $data = @file_get_contents(dirname(__FILE__).'/skins/'.$skin.'/skin.xml');
+        }else{
+            return array('original',400,170);
+        }
         if(preg_match('/<width>(\d+)<\/width>/',$data,$match)){
             $width = $match[1];
         }else{
