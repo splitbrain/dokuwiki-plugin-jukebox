@@ -44,7 +44,7 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         global $ID;
         $match = substr($match,10,-2); //strip markup from start and end
 
@@ -104,7 +104,7 @@ class syntax_plugin_jukebox extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, &$R, $data) {
+    function render($mode, Doku_Renderer $R, $data) {
         if($mode != 'xhtml') return false;
 
         $att = array();
