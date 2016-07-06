@@ -2,7 +2,7 @@
 base   jukebox
 author Andreas Gohr
 email  andi@splitbrain.org
-date   2016-02-02
+date   2016-02-03
 name   Jukebox Plugin
 desc   Plays MP3 Audio or FLV Video from a namespace
 url    http://www.dokuwiki.org/plugin:jukebox
